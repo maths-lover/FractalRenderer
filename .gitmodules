@@ -1,0 +1,3 @@
+[submodule "GLFW"]
+	path = GLFW
+	url = git@maths-lover.github.com:maths-lover/glfw.git
