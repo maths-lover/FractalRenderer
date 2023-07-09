@@ -1,3 +1,9 @@
 [submodule "GLFW"]
 	path = GLFW
 	url = git@maths-lover.github.com:maths-lover/glfw.git
+[submodule "vendor/imgui"]
+	path = vendor/imgui
+	url = https://github.com/ocornut/imgui.git
+[submodule "vendor/GLFW"]
+	path = vendor/GLFW
+	url = https://github.com/maths-lover/glfw.git

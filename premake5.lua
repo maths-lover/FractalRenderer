@@ -1,6 +1,6 @@
-workspace "MandelbrotRenderer"
+workspace "FractalRenderer"
 	architecture "x86_64"
-	startproject "MandelbrotRenderer"
+	startproject "FractalRenderer"
 
 	configurations { "Debug", "Release" }
 
@@ -11,10 +11,11 @@ workspace "MandelbrotRenderer"
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 group "Dependencies"
-	include "GLFW"
-	include "GLAD"
+	include "vendor/GLFW"
+	include "vendor/GLAD"
+	include "vendor/imgui"
 group ""
 
 group "Core"
-	include "MandelbrotRenderer"
+	include "FractalRenderer"
 group ""
