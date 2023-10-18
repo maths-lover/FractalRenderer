@@ -33,7 +33,7 @@ project "FractalRenderer"
 		"GLFW",
 		"GLAD",
 
-		"ImGui",
+		"imgui",
 
 		"opengl32.lib"
 	}

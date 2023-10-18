@@ -1,6 +1,6 @@
 /*
 * FractalRenderer.cpp
-* Author: Suraj Pal Singh
+* Author: Suraj Pal Singh and Varsha Rao
 * Date: 2023-06-21
 * License: MIT License
 */
@@ -17,13 +17,13 @@
 
 namespace FractalRenderer {
 
-	FractalRenderer::FractalGenerator::FractalGenerator() :
-		width(FractalRenderer::FractalGenerator::WIDTH),
-		height(FractalRenderer::FractalGenerator::HEIGHT),
-		maxIterations(150),
-		escapeRadius(FractalRenderer::FractalGenerator::DEFAULT_ESCAPE_RADIUS),
-		juliaConstantReal(FractalRenderer::FractalGenerator::DEFAULT_JULIA_REAL),
-		juliaConstantImaginary(FractalRenderer::FractalGenerator::DEFAULT_JULIA_IMAGINARY),
+	FractalGenerator::FractalGenerator() :
+		width(FractalGenerator::WIDTH),
+		height(FractalGenerator::HEIGHT),
+		maxIterations(200),
+		escapeRadius(FractalGenerator::DEFAULT_ESCAPE_RADIUS),
+		juliaConstantReal(FractalGenerator::DEFAULT_JULIA_REAL),
+		juliaConstantImaginary(FractalGenerator::DEFAULT_JULIA_IMAGINARY),
 		zoomFactor(1.0f),
 		speedFactor(0.4f),
 		translationX(0.0f),
@@ -42,8 +42,8 @@ namespace FractalRenderer {
 		}
 
 		// Set GLFW window hints
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 		// Create a GLFW window
@@ -76,9 +76,9 @@ namespace FractalRenderer {
 		ImGui_ImplOpenGL3_Init("#version 460 core");
 
 		// Create the julia shader program
-		juliaShaderProgram = FractalRenderer::createShaderProgram(
-			FractalRenderer::readShaderFile("src/shaders/julia_vertex_shader.glsl").c_str(),
-			FractalRenderer::readShaderFile("src/shaders/julia_frag_shader.glsl").c_str()
+		juliaShaderProgram = createShaderProgram(
+			readShaderFile("src/shaders/julia_vertex_shader.glsl").c_str(),
+			readShaderFile("src/shaders/julia_frag_shader.glsl").c_str()
 		);
 		if (juliaShaderProgram == 0) {
 			glfwTerminate();
@@ -86,9 +86,9 @@ namespace FractalRenderer {
 		}
 
 		// Create the mandelbrot shader program
-		mandelbrotShaderProgram = FractalRenderer::createShaderProgram(
-			FractalRenderer::readShaderFile("src/shaders/mandelbrot_vertex_shader.glsl").c_str(),
-			FractalRenderer::readShaderFile("src/shaders/mandelbrot_frag_shader.glsl").c_str()
+		mandelbrotShaderProgram = createShaderProgram(
+			readShaderFile("src/shaders/mandelbrot_vertex_shader.glsl").c_str(),
+			readShaderFile("src/shaders/mandelbrot_frag_shader.glsl").c_str()
 		);
 		if (mandelbrotShaderProgram == 0) {
 			glfwTerminate();
@@ -119,7 +119,7 @@ namespace FractalRenderer {
 		glBindVertexArray(0);
 	}
 
-	void FractalRenderer::FractalGenerator::run()
+	void FractalGenerator::run()
 	{
 		// Rendering loop
 		while (!glfwWindowShouldClose(window))
@@ -132,13 +132,13 @@ namespace FractalRenderer {
 	}
 
 	// Callback function for GLFW error handling
-	void FractalRenderer::FractalGenerator::errorCallback(int error, const char* description)
+	void FractalGenerator::errorCallback(int error, const char* description)
 	{
 		std::cerr << "GLFW Error (" << error << "): " << description << std::endl;
 	}
 
 	// Reset the Julia set parameters to their default values
-	void FractalRenderer::FractalGenerator::resetParameters()
+	void FractalGenerator::resetParameters()
 	{
 		maxIterations = 200;
 		escapeRadius = DEFAULT_ESCAPE_RADIUS;
@@ -151,7 +151,7 @@ namespace FractalRenderer {
 		startTime = std::chrono::high_resolution_clock::now();
 	}
 
-	void FractalRenderer::FractalGenerator::render()
+	void FractalGenerator::render()
 	{
 		// put time in seconds since start of program in variable elapsedTime
 		std::chrono::high_resolution_clock::time_point currentTime = std::chrono::high_resolution_clock::now();
@@ -175,15 +175,17 @@ namespace FractalRenderer {
 
 		if (ImGui::Button("Mandelbrot Set")) {
 			renderMode = RenderMode::Mandelbrot;
+			shaderProgram = mandelbrotShaderProgram;
 		}
 
 		ImGui::SameLine();
 
 		if (ImGui::Button("Julia Set Fractal")) {
 			renderMode = RenderMode::Julia;
+			shaderProgram = juliaShaderProgram;
 		}
 
-		ImGui::SliderInt("Max Iterations", &maxIterations, 1, 1000);
+		ImGui::SliderInt("Max Iterations", &maxIterations, 1, FractalGenerator::MaxIterations);
 		ImGui::SliderFloat("Escape Radius", &escapeRadius, 50.0f, 200.0f);
 
 		if (renderMode == RenderMode::Julia) {
@@ -305,7 +307,7 @@ namespace FractalRenderer {
 			}
 		}
 
-		// Handle keyboard controls for panning using WASD
+		// Handle keyboard controls for panning using WASD keys
 		if (!ImGui::IsAnyItemActive())
 		{
 			if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
@@ -324,13 +326,6 @@ namespace FractalRenderer {
 			{
 				translationX += 0.01f;
 			}
-		}
-
-		if (renderMode == RenderMode::Julia) {
-			shaderProgram = juliaShaderProgram;
-		}
-		else {
-			shaderProgram = mandelbrotShaderProgram;
 		}
 
 		// Update the Julia constant uniform in the shader program
@@ -373,7 +368,7 @@ namespace FractalRenderer {
 		glfwSwapBuffers(window);
 	}
 
-	void FractalRenderer::FractalGenerator::cleanup()
+	void FractalGenerator::cleanup()
 	{
 		// Cleanup ImGui
 		ImGui_ImplOpenGL3_Shutdown();

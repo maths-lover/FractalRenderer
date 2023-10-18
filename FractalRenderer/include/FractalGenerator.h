@@ -4,8 +4,6 @@
 #include <chrono>
 #include "GLFW/glfw3.h"
 
-ImGuiIO* io;
-
 namespace FractalRenderer {
 	class FractalGenerator {
 	public:
